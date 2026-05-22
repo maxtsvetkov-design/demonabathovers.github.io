@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nabat Content Hover Transition</title>
+  <style>
+    :root {
+      --page-background: #f7f6f7;
+      --border-primary: #e5e5e5;
+      --surface-highlight-light: #faf4f0;
+      --surface-highlight-darker: #f8f1ec;
+      --brand: #096151;
+      --text-normal: #1e1a23;
+      --text-coal: #565259;
+      --shade-muted: #d3d0d5;
+      --shadow-hover: 0 6px 10px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.08);
+      --duration: 420ms;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 15% 15%, #ffffff 0%, var(--page-background) 45%, #ece9ed 100%);
+      color: var(--text-normal);
+      padding: 24px;
+    }
+
+    .demo {
+      width: min(94vw, 380px);
+      background: #ffffff;
+      border: 1px solid #efedf1;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 12px 30px rgba(21, 19, 28, 0.08);
+    }
+
+    .cards-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .location-card {
+      width: 301px;
+      margin: 0 auto;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .status-row {
+      position: relative;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: transparent;
+      box-shadow: none;
+      padding: 12px 0;
+      border-radius: 0;
+      transform-origin: center;
+      transform: scale(1);
+      transition:
+        background-color var(--duration) var(--ease),
+        border-color var(--duration) var(--ease),
+        box-shadow var(--duration) var(--ease),
+        padding var(--duration) var(--ease),
+        transform var(--duration) var(--ease);
+      will-change: transform, box-shadow, background-color, padding;
+    }
+
+    .status-row::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 1px;
+      background: var(--border-primary);
+      transform-origin: left center;
+      transform: scaleX(1);
+      transition: transform var(--duration) var(--ease), background-color var(--duration) var(--ease);
+    }
+
+    .left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .icon-pill {
+      width: 26px;
+      height: 26px;
+      display: block;
+      flex-shrink: 0;
+      position: relative;
+      overflow: visible;
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .location-icon-box {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .location-icon {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 26px;
+      height: 26px;
+      object-fit: contain;
+      transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease), filter var(--duration) var(--ease);
+      pointer-events: none;
+    }
+
+    .location-icon-primary {
+      opacity: 1;
+      transform: scale(1);
+      transform-origin: center;
+      filter: contrast(1) brightness(1) saturate(1);
+    }
+
+    .name,
+    .divider,
+    .area,
+    .trend-value {
+      margin: 0;
+      white-space: nowrap;
+      font-weight: 400;
+      padding: -4px;
+      transition: color var(--duration) var(--ease), opacity var(--duration) var(--ease), transform var(--duration) var(--ease);
+    }
+
+    .name,
+    .trend-value {
+      font-size: 14px;
+      line-height: 22px;
+    }
+
+    .divider,
+    .area {
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .divider {
+      color: var(--shade-muted);
+    }
+
+    .trend {
+      position: relative;
+      width: 44px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
+    .trend-icon-wrap {
+      position: absolute;
+      left: 0;
+      top: 3px;
+      width: 16px;
+      height: 16px;
+      margin-left: -6px;
+      flex-shrink: 0;
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .trend-arrow-code {
+      position: absolute;
+      inset: 0;
+      left: -2px;
+      color: var(--text-normal);
+      transform: rotate(-35deg);
+      transform-origin: 8px 8px;
+      transition: transform var(--duration) var(--ease), color var(--duration) var(--ease);
+    }
+
+    .trend-arrow-code::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      right: 4px;
+      top: 7px;
+      height: 1.6px;
+      background: currentColor;
+      border-radius: 2px;
+    }
+
+    .trend-arrow-code::after {
+      content: "";
+      position: absolute;
+      right: 1px;
+      top: 4.6px;
+      width: 5px;
+      height: 5px;
+      border-top: 1.6px solid currentColor;
+      border-right: 1.6px solid currentColor;
+      transform: rotate(45deg);
+    }
+
+    .status-row .name {
+      color: var(--text-coal);
+    }
+
+    .status-row .area {
+      color: var(--text-coal);
+    }
+
+    .metric-stack {
+      display: inline-flex;
+      height: 18px;
+      overflow: hidden;
+      vertical-align: top;
+    }
+
+    .metric-track {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      transform: translateY(0);
+      transition: transform var(--duration) var(--ease);
+    }
+
+    .area-normal,
+    .area-hover {
+      position: static;
+      transition: color var(--duration) var(--ease);
+    }
+
+    .area-hover {
+      opacity: 1;
+      transform: none;
+    }
+
+    .status-row .trend-value {
+      position: absolute;
+      right: 0;
+      top: 0;
+      color: var(--text-normal);
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .location-card:hover .status-row,
+    .location-card:focus-visible .status-row {
+      background: var(--surface-highlight-light);
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-1px) scale(1.015);
+      padding-left: 10px;
+      padding-right: 8px;
+    }
+
+    .location-card:hover .status-row::after,
+    .location-card:focus-visible .status-row::after {
+      transform: scaleX(1);
+      background: var(--brand);
+    }
+
+    .location-card:hover .status-row .name,
+    .location-card:focus-visible .status-row .name,
+    .location-card:hover .status-row .area,
+    .location-card:focus-visible .status-row .area {
+      color: var(--text-normal);
+    }
+
+    .location-card:hover .status-row .area-normal,
+    .location-card:focus-visible .status-row .area-normal {
+      opacity: 1;
+      transform: none;
+    }
+
+    .location-card:hover .status-row .area-hover,
+    .location-card:focus-visible .status-row .area-hover {
+      opacity: 1;
+      transform: none;
+    }
+
+    .location-card:hover .metric-track,
+    .location-card:focus-visible .metric-track {
+      transform: translateY(-18px);
+    }
+
+    .location-card:hover .icon-pill,
+    .location-card:focus-visible .icon-pill {
+      transform: scale(1.06);
+    }
+
+    .location-card:hover .location-icon-primary,
+    .location-card:focus-visible .location-icon-primary {
+      opacity: 1;
+      transform: scale(1);
+      filter: contrast(1.35) brightness(0.85) saturate(1.1);
+    }
+
+    .location-card:hover .trend-value,
+    .location-card:focus-visible .trend-value {
+      opacity: 0;
+      transform: translateX(6px);
+    }
+
+    .location-card:hover .trend-arrow-code,
+    .location-card:focus-visible .trend-arrow-code {
+      transform: rotate(0deg);
+    }
+
+    .location-card:hover .trend-icon-wrap,
+    .location-card:focus-visible .trend-icon-wrap {
+      transform: translateX(24px);
+    }
+
+    .location-card:focus-visible {
+      border-radius: 10px;
+      box-shadow: 0 0 0 3px rgba(9, 97, 81, 0.16);
+    }
+
+    @media (max-width: 420px) {
+      .demo {
+        width: 100%;
+        padding: 16px;
+      }
+
+      .location-card {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="demo" aria-label="Figma state transition demo">
+    <div class="cards-list" id="cardsList"></div>
+  </main>
+
+  <template id="cardTemplate">
+    <div class="location-card" tabindex="0" aria-label="Location status: hover to reveal detailed state">
+      <section class="status-row" data-name="content">
+        <div class="left">
+          <div class="icon-pill">
+            <span class="location-icon-box" aria-hidden="true">
+              <img class="location-icon location-icon-primary" src="locationinfo__frame__frame.svg" alt="Location icon" />
+            </span>
+          </div>
+          <p class="name">Al Marzoum</p>
+          <p class="divider">|</p>
+          <div class="metric-stack" aria-live="polite">
+            <div class="metric-track">
+              <p class="area area-normal">4,214 ha</p>
+              <p class="area area-hover">12 layers available</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="trend" aria-hidden="true">
+          <div class="trend-icon-wrap">
+            <span class="trend-arrow-code"></span>
+          </div>
+          <p class="trend-value">+2%</p>
+        </div>
+      </section>
+    </div>
+  </template>
+
+  <script>
+    const cardsData = [
+      { location: "Al Marzoum", area: "4,214 ha", trend: "+2%" },
+      { location: "Jebel Ali", area: "2,986 ha", trend: "+3%" },
+      { location: "Ras Al Khor", area: "1,742 ha", trend: "+1%" },
+      { location: "Umm Al Quwain", area: "3,118 ha", trend: "+4%" },
+      { location: "Khor Fakkan", area: "2,105 ha", trend: "+2%" },
+      { location: "Abu Al Abyad", area: "5,032 ha", trend: "+5%" },
+      { location: "Saadiyat", area: "1,408 ha", trend: "+1%" },
+      { location: "Sir Bani Yas", area: "2,673 ha", trend: "+3%" },
+      { location: "Jubail", area: "3,524 ha", trend: "+2%" },
+      { location: "Kalba", area: "1,958 ha", trend: "+2%" },
+      { location: "Al Mirfa", area: "2,311 ha", trend: "+1%" },
+      { location: "Qurm Reserve", area: "1,624 ha", trend: "+3%" },
+      { location: "Al Zorah", area: "1,287 ha", trend: "+2%" },
+      { location: "Mina Zayed", area: "2,044 ha", trend: "+1%" },
+      { location: "Yas Channel", area: "1,813 ha", trend: "+2%" },
+      { location: "Mangrove Bay", area: "3,449 ha", trend: "+4%" },
+      { location: "Al Hamriya", area: "2,238 ha", trend: "+2%" },
+      { location: "Al Dhafra", area: "4,907 ha", trend: "+3%" },
+      { location: "Khalifa Port", area: "2,570 ha", trend: "+2%" },
+      { location: "Al Sila", area: "1,936 ha", trend: "+1%" }
+    ];
+
+    const cardsList = document.getElementById("cardsList");
+    const cardTemplate = document.getElementById("cardTemplate");
+
+    cardsData.forEach((item) => {
+      const fragment = cardTemplate.content.cloneNode(true);
+      fragment.querySelector(".name").textContent = item.location;
+      fragment.querySelector(".area-normal").textContent = item.area;
+      fragment.querySelector(".trend-value").textContent = item.trend;
+      cardsList.appendChild(fragment);
+    });
+  </script>
+</body>
+</html>
