@@ -27,24 +27,210 @@
       margin: 0;
       min-height: 100vh;
       display: flex;
-      justify-content: center;
+      justify-content: flex-start;
       align-items: flex-start;
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background-color: rgb(250 244 240);
+      background-image:
+        radial-gradient(circle at 8% 18%, rgba(9, 97, 81, 0.08) 0 1.5px, transparent 2px),
+        radial-gradient(circle at 22% 36%, rgba(9, 97, 81, 0.06) 0 1.2px, transparent 2px),
+        radial-gradient(circle at 36% 20%, rgba(9, 97, 81, 0.06) 0 1.2px, transparent 2px),
+        radial-gradient(circle at 52% 34%, rgba(9, 97, 81, 0.06) 0 1.2px, transparent 2px),
+        linear-gradient(115deg, rgba(9, 97, 81, 0.07) 0%, rgba(9, 97, 81, 0) 62%),
+        linear-gradient(35deg, rgba(9, 97, 81, 0.05) 0%, rgba(9, 97, 81, 0) 58%),
+        repeating-linear-gradient(120deg, rgba(86, 82, 89, 0.045) 0 1px, transparent 1px 34px),
+        repeating-linear-gradient(45deg, rgba(86, 82, 89, 0.03) 0 1px, transparent 1px 42px);
+      background-size: auto, auto, auto, auto, 100% 100%, 100% 100%, 220px 220px, 260px 260px;
+      background-attachment: fixed;
       color: var(--text-normal);
       padding: 24px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    .bg-map {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-map::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 66% 46%, rgba(31, 138, 112, 0.22) 0%, rgba(31, 138, 112, 0.1) 24%, rgba(31, 138, 112, 0) 60%),
+        radial-gradient(circle at 79% 31%, rgba(54, 173, 145, 0.16) 0%, rgba(54, 173, 145, 0) 46%),
+        radial-gradient(circle at 81% 73%, rgba(27, 117, 98, 0.14) 0%, rgba(27, 117, 98, 0) 50%),
+        linear-gradient(145deg, rgba(20, 122, 102, 0.08) 0%, rgba(20, 122, 102, 0) 55%);
+      opacity: 0.9;
+    }
+
+    .map-layer-stack {
+      position: absolute;
+      right: clamp(24px, 12vw, 180px);
+      top: clamp(130px, 26vh, 280px);
+      width: min(52vw, 760px);
+      height: min(62vh, 620px);
+      display: grid;
+      place-items: center;
+    }
+
+    .map-layer {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border-radius: 999px;
+      border: 1px solid var(--stroke);
+      background: var(--fill);
+      width: var(--size);
+      height: var(--size);
+      transform: translate(-50%, -50%) translate(var(--dx), var(--dy));
+      box-shadow: 0 10px 28px rgba(9, 97, 81, 0.09);
+      transition:
+        width 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        height 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 260ms ease,
+        border-color 260ms ease;
+    }
+
+    .map-layer.is-selected {
+      box-shadow:
+        0 0 0 1px rgba(9, 97, 81, 0.55),
+        0 0 0 6px rgba(9, 97, 81, 0.14),
+        0 14px 34px rgba(9, 97, 81, 0.2);
+      border-color: rgba(9, 97, 81, 0.64);
+    }
+
+    .map-layer.is-hovered {
+      border: 2px solid rgba(9, 97, 81, 0.8);
+      box-shadow:
+        0 0 0 1px rgba(9, 97, 81, 0.64),
+        0 8px 20px rgba(9, 97, 81, 0.16);
+    }
+
+    .map-layer::after {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border-radius: 999px;
+      border: 1px dashed rgba(9, 97, 81, 0.12);
+      opacity: 0.72;
+    }
+
+    .map-location-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--dot-color, rgba(9, 97, 81, 0.75));
+      transform: translate(-50%, -50%) translate(var(--dot-x), var(--dot-y));
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.52);
+      transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease, opacity 220ms ease;
+      opacity: 0.82;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .map-location-dot.is-hovered {
+      transform: translate(-50%, -50%) translate(var(--dot-x), var(--dot-y)) scale(2.1);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.94), 0 0 0 10px color-mix(in srgb, var(--dot-color, rgba(9, 97, 81, 0.75)) 35%, transparent);
+      opacity: 1;
     }
 
     .demo {
       width: min(94vw, 380px);
+      margin-left: 0;
       background: rgb(252 250 248);
-      border: 1px solid #efedf1;
+      border: 1px solid #dad4d376;
       border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 12px 30px rgba(21, 19, 28, 0.08);
+      padding: 12px;
+      --tw-shadow: 0px 1.823px 1.687px 0px rgba(0, 0, 0, 0.04), 0px 5.124px 5.915px 0px rgba(0, 0, 0, 0.01);
+      --tw-shadow-colored: 0px 1.823px 1.687px 0px var(--tw-shadow-color), 0px 5.124px 5.915px 0px var(--tw-shadow-color);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      background-color: rgb(250, 244, 240);
+      border-bottom-color: rgb(212, 212, 212);
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      border-bottom-style: solid;
+      border-bottom-width: 0px;
+      border-left-color: rgb(212, 212, 212);
+      border-left-style: solid;
+      border-left-width: 0px;
+      border-right-color: rgb(212, 212, 212);
+      border-right-style: solid;
+      border-right-width: 0px;
+      border-top-color: rgb(212, 212, 212);
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+      border-top-style: solid;
+      border-top-width: 0px;
+      bottom: 8px;
+      --tw-shadow: rgba(0, 0, 0, 0.14) 0px 10px 22px -4px, rgba(0, 0, 0, 0.2) 0px 18px 40px -10px;
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+      box-sizing: border-box;
+      color: rgb(30, 26, 35);
+      font-family: Manrope, Inter, -apple-system, "system-ui", "Segoe UI", system-ui, sans-serif;
+      font-feature-settings: normal;
+      font-variation-settings: normal;
+      height: 867px;
+      inset-inline-start: 8px;
+      line-height: 24px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: absolute;
+      padding: 4px;
+      tab-size: 4;
+      text-size-adjust: 100%;
+      top: 8px;
+      unicode-bidi: isolate;
+      z-index: 30;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .panel-stack::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+    }
+
+    .panel-stack::after {
+      content: "";
+      position: absolute;
+      right: 6px;
+      top: 14px;
+      width: 2px;
+      height: 44px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(9, 97, 81, 0.72), rgba(9, 97, 81, 0.36));
+      opacity: 0;
+      transform: scaleY(0.72);
+      transform-origin: top center;
+      transition: opacity 160ms ease, transform 160ms ease;
+      pointer-events: none;
+    }
+
+    .panel-stack.is-scrolling::after {
+      opacity: 1;
+      transform: scaleY(1);
     }
 
     .cards-list {
+      position: relative;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -55,7 +241,73 @@
       margin: 0 auto;
       outline: none;
       cursor: pointer;
+      user-select: none;
+      will-change: transform;
     }
+
+    .location-card .status-row {
+      overflow: hidden;
+    }
+
+    .location-card .status-row::before {
+      content: "";
+      position: absolute;
+      left: var(--ripple-x, 50%);
+      top: 50%;
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(9, 97, 81, 0.16);
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .location-card.click-pulse .status-row {
+      background: rgba(9, 97, 81, 0.08);
+      box-shadow: 0 0 0 1px rgba(9, 97, 81, 0.14);
+    }
+
+    .location-card.layer-selected .status-row {
+      background: rgba(9, 97, 81, 0.07);
+      box-shadow: 0 0 0 1px rgba(9, 97, 81, 0.16);
+      padding-left: 10px;
+      padding-right: 8px;
+    }
+
+    .location-card.layer-selected .status-row::after {
+      background: rgba(9, 97, 81, 0.72);
+      transform: scaleX(1);
+    }
+
+    .location-card.click-pulse .status-row::before {
+      animation: layeredRipple 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes layeredRipple {
+      0% {
+        opacity: 0.9;
+        transform: translate(-50%, -50%) scale(0.22);
+        box-shadow:
+          0 0 0 0 rgba(9, 97, 81, 0.22),
+          0 0 0 0 rgba(9, 97, 81, 0.16);
+      }
+      60% {
+        opacity: 0.45;
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow:
+          0 0 0 18px rgba(9, 97, 81, 0.14),
+          0 0 0 34px rgba(9, 97, 81, 0.08);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow:
+          0 0 0 24px rgba(9, 97, 81, 0),
+          0 0 0 44px rgba(9, 97, 81, 0);
+      }
+    }
+
 
     .status-row {
       position: relative;
@@ -133,6 +385,43 @@
       transform-origin: center;
       filter: contrast(1) brightness(1) saturate(1);
     }
+
+    .location-icon-drag {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .drag-core,
+    .drag-dot {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      border-radius: 50%;
+      background: var(--text-normal);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.25);
+      transition: transform 280ms var(--ease), opacity 200ms var(--ease);
+    }
+
+    .drag-core {
+      width: 4px;
+      height: 4px;
+      transition-delay: 20ms;
+    }
+
+    .drag-dot {
+      width: 3.2px;
+      height: 3.2px;
+      transition-duration: 340ms;
+    }
+
+    .drag-dot.d1 { --tx: -5px; --ty: -7px; transition-delay: 40ms; }
+    .drag-dot.d2 { --tx: -5px; --ty: 0px; transition-delay: 60ms; }
+    .drag-dot.d3 { --tx: -5px; --ty: 7px; transition-delay: 80ms; }
+    .drag-dot.d4 { --tx: 5px; --ty: -7px; transition-delay: 100ms; }
+    .drag-dot.d5 { --tx: 5px; --ty: 0px; transition-delay: 120ms; }
+    .drag-dot.d6 { --tx: 5px; --ty: 7px; transition-delay: 140ms; }
 
     .name,
     .divider,
@@ -299,13 +588,6 @@
       transform: scale(1.06);
     }
 
-    .location-card:hover .location-icon-primary,
-    .location-card:focus-visible .location-icon-primary {
-      opacity: 1;
-      transform: scale(1);
-      filter: contrast(1.35) brightness(0.85) saturate(1.1);
-    }
-
     .location-card:hover .trend-value,
     .location-card:focus-visible .trend-value {
       opacity: 0;
@@ -332,6 +614,13 @@
       border-radius: 12px;
       padding: 14px 16px 0;
       margin-bottom: 16px;
+      background-color: rgb(252, 250, 248);
+    }
+
+    .project-header.has-scrolled {
+      background-color: rgb(254, 253, 252);
+      --tw-shadow: 0px 1.823px 1.687px 0px rgba(0, 0, 0, 0.04), 0px 5.124px 5.915px 0px rgba(0, 0, 0, 0.01);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
     }
 
     .project-header-top {
@@ -495,15 +784,20 @@
     }
 
     .project-header {
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 10;
       cursor: pointer;
       transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
-                  box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1);
+                  box-shadow 300ms cubic-bezier(0.22, 1, 0.36, 1),
+                  background-color 300ms cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .project-header:hover {
       transform: translateY(-4px);
-      box-shadow: 0 10px 28px rgba(21, 19, 28, 0.1);
+      background-color: rgb(255, 255, 255);
+      --tw-shadow: 0px 1.823px 1.687px 0px rgba(0, 0, 0, 0.04), 0px 5.124px 5.915px 0px rgba(0, 0, 0, 0.01);
+      box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
     }
 
     /* ── header arrow ── */
@@ -563,7 +857,7 @@
     }
 
     .project-header:hover ~ .cards-list {
-      opacity: 0.85;
+      opacity: 0.82;
       transform: translateY(-4px);
       pointer-events: none;
     }
@@ -580,32 +874,63 @@
     }
   </style>
 </head>
-<body>
-  <main class="demo" aria-label="Figma state transition demo">
-    <header class="project-header">
-      <span class="header-arrow" aria-hidden="true"><span class="header-arrow-code"></span></span>
-      <div class="project-header-top">
-        <span class="project-dot" aria-hidden="true"></span>
-        <span class="project-tag">AE</span>
-        <span class="project-tag-divider">|</span>
-        <span class="project-tag">8351 ha</span>
-      </div>
-      <h1 class="project-title">Project Honey 2024</h1>
-      <div class="project-meta-row">
-        <span class="project-meta-label">Land cover</span>
-        <span class="project-meta-value" id="lcTotalLabel">8331 ha</span>
-      </div>
-      <div class="lc-chart-wrap">
-        <div class="lc-bar" id="lcBar"></div>
-      </div>
-      <div class="lc-tooltip" id="lcTooltip">
-        <div class="lc-tooltip-label" id="lcTipLabel"></div>
-        <div class="lc-tooltip-val" id="lcTipVal"></div>
-      </div>
-      <hr class="project-divider" />
-    </header>
-    <div class="cards-list" id="cardsList"></div>
-  </main>
+<body style="    background-color: #697a87;">
+  <div class="bg-map" aria-hidden="true">
+    <div class="map-layer-stack" id="mapLayerStack"></div>
+  </div>
+  <section class="panel-stack" aria-label="Project panels">
+    <main class="demo js-demo-panel" data-panel-id="honey" aria-label="Project Honey 2024 panel">
+      <header class="project-header">
+        <span class="header-arrow" aria-hidden="true"><span class="header-arrow-code"></span></span>
+        <div class="project-header-top">
+          <span class="project-dot" aria-hidden="true"></span>
+          <span class="project-tag">AE</span>
+          <span class="project-tag-divider">|</span>
+          <span class="project-tag">8351 ha</span>
+        </div>
+        <h1 class="project-title">Project Honey 2024</h1>
+        <div class="project-meta-row">
+          <span class="project-meta-label">Land cover</span>
+          <span class="project-meta-value js-lc-total-label"></span>
+        </div>
+        <div class="lc-chart-wrap">
+          <div class="lc-bar js-lc-bar"></div>
+        </div>
+        <div class="lc-tooltip js-lc-tooltip">
+          <div class="lc-tooltip-label js-lc-tip-label"></div>
+          <div class="lc-tooltip-val js-lc-tip-val"></div>
+        </div>
+        <hr class="project-divider" />
+      </header>
+      <div class="cards-list js-cards-list"></div>
+    </main>
+
+    <main class="demo js-demo-panel" data-panel-id="coffee" aria-label="Project Coffee 2024 panel">
+      <header class="project-header">
+        <span class="header-arrow" aria-hidden="true"><span class="header-arrow-code"></span></span>
+        <div class="project-header-top">
+          <span class="project-dot" aria-hidden="true"></span>
+          <span class="project-tag">AE</span>
+          <span class="project-tag-divider">|</span>
+          <span class="project-tag">6910 ha</span>
+        </div>
+        <h1 class="project-title">Project Coffee 2024</h1>
+        <div class="project-meta-row">
+          <span class="project-meta-label">Land cover</span>
+          <span class="project-meta-value js-lc-total-label"></span>
+        </div>
+        <div class="lc-chart-wrap">
+          <div class="lc-bar js-lc-bar"></div>
+        </div>
+        <div class="lc-tooltip js-lc-tooltip">
+          <div class="lc-tooltip-label js-lc-tip-label"></div>
+          <div class="lc-tooltip-val js-lc-tip-val"></div>
+        </div>
+        <hr class="project-divider" />
+      </header>
+      <div class="cards-list js-cards-list"></div>
+    </main>
+  </section>
 
   <template id="cardTemplate">
     <div class="location-card" tabindex="0" aria-label="Location status: hover to reveal detailed state">
@@ -614,6 +939,15 @@
           <div class="icon-pill">
             <span class="location-icon-box" aria-hidden="true">
               <img class="location-icon location-icon-primary" src="locationinfo__frame__frame.svg" alt="Location icon" />
+              <span class="location-icon-drag" aria-hidden="true">
+                <span class="drag-core"></span>
+                <span class="drag-dot d1"></span>
+                <span class="drag-dot d2"></span>
+                <span class="drag-dot d3"></span>
+                <span class="drag-dot d4"></span>
+                <span class="drag-dot d5"></span>
+                <span class="drag-dot d6"></span>
+              </span>
             </span>
           </div>
           <p class="name">Al Marzoum</p>
@@ -637,121 +971,363 @@
   </template>
 
   <script>
-    /* ── Land-cover chart data ── */
-    const lcData = [
-      { label: "Shrubland",  ha: 3124, color: "#7c6fcd" },
-      { label: "Sabkha",     ha: 1847, color: "#c4651a" },
-      { label: "Mangroves",  ha: 2203, color: "#3fa46a" },
-      { label: "Bare soil",  ha:  680, color: "#8a8690" },
-      { label: "Waterbody",  ha:  477, color: "#4a9ec4" }
-    ];
+    const cardTemplate = document.getElementById("cardTemplate");
+    const mapLayerStack = document.getElementById("mapLayerStack");
+    const mapLayerNodes = new Map();
+    let activePanelState = null;
 
-    const lcTotal   = lcData.reduce((s, d) => s + d.ha, 0);
-    const lcBar     = document.getElementById("lcBar");
-    const lcTooltip = document.getElementById("lcTooltip");
-    const lcTipLbl  = document.getElementById("lcTipLabel");
-    const lcTipVal  = document.getElementById("lcTipVal");
+    const panelsConfig = {
+      honey: {
+        lcData: [
+          { label: "Shrubland",  ha: 3124, color: "#7c6fcd" },
+          { label: "Sabkha",     ha: 1847, color: "#c4651a" },
+          { label: "Mangroves",  ha: 2203, color: "#3fa46a" },
+          { label: "Bare soil",  ha:  680, color: "#8a8690" },
+          { label: "Waterbody",  ha:  477, color: "#4a9ec4" }
+        ],
+        cardsData: [
+          { location: "Al Marzoum", area: "4,214 ha", trend: "+2%" },
+          { location: "Jebel Ali", area: "2,986 ha", trend: "+3%" },
+          { location: "Ras Al Khor", area: "1,742 ha", trend: "+1%" },
+          { location: "Umm Al Quwain", area: "3,118 ha", trend: "+4%" },
+          { location: "Khor Fakkan", area: "2,105 ha", trend: "+2%" },
+          { location: "Abu Al Abyad", area: "5,032 ha", trend: "+5%" },
+          { location: "Saadiyat", area: "1,408 ha", trend: "+1%" },
+          { location: "Sir Bani Yas", area: "2,673 ha", trend: "+3%" }
+        ]
+      },
+      coffee: {
+        lcData: [
+          { label: "Coffee Agroforest", ha: 2410, color: "#6f4e37" },
+          { label: "Shade Canopy",      ha: 1795, color: "#4b7f52" },
+          { label: "Dry Terraces",      ha: 1046, color: "#a07145" },
+          { label: "Access Paths",      ha:  862, color: "#8f867d" },
+          { label: "Water Retention",   ha:  797, color: "#3a8aa8" }
+        ],
+        cardsData: [
+          { location: "Buna Ridge", area: "3,104 ha", trend: "+3%" },
+          { location: "Kaffa Basin", area: "2,412 ha", trend: "+2%" },
+          { location: "Jimma Hills", area: "1,889 ha", trend: "+4%" },
+          { location: "Sidamo North", area: "2,206 ha", trend: "+2%" },
+          { location: "Yirgacheffe", area: "1,624 ha", trend: "+5%" },
+          { location: "Bench Maji", area: "2,931 ha", trend: "+1%" },
+          { location: "Harar Edge", area: "1,277 ha", trend: "+2%" },
+          { location: "Bale Slopes", area: "2,048 ha", trend: "+3%" }
+        ]
+      }
+    };
 
-    const segments = [];
-    let hideTimer = null;
+    const getCardLayerKey = card => card.querySelector(".name")?.textContent?.trim() || "";
 
-    lcData.forEach((d, i) => {
-      const seg = document.createElement("div");
-      seg.className = "lc-segment";
-      seg.style.background = d.color;
-      seg.style.setProperty("--seg-flex", String(d.ha));
-      /* stagger each segment's fill by 60 ms */
-      seg.style.transitionDelay = (i * 60) + "ms, 0ms, " + (i * 16) + "ms";
+    function anchorTip(el, tooltip) {
+      const r = el.getBoundingClientRect();
+      const tipW = tooltip.offsetWidth;
+      const cx = r.left + r.width / 2;
+      const anchorY = r.bottom - 4;
+      tooltip.style.left = Math.round(cx - tipW / 2) + "px";
+      tooltip.style.top = Math.round(anchorY) + "px";
+    }
 
-      const showTip = () => {
-        clearTimeout(hideTimer);
-        const alreadyVisible = lcTooltip.classList.contains("visible");
+    function syncLayerSelection(state, layerKey) {
+      state.selectedLayerKey = layerKey || "";
 
-        /* update text */
-        lcTipLbl.textContent = d.label;
-        lcTipVal.textContent = d.ha.toLocaleString() + " ha ("
-          + ((d.ha / lcTotal) * 100).toFixed(1) + "%)";
+      const cards = Array.from(state.cardsList.querySelectorAll(".location-card"));
+      cards.forEach(card => {
+        const key = getCardLayerKey(card);
+        card.classList.toggle("layer-selected", Boolean(state.selectedLayerKey) && key === state.selectedLayerKey);
+      });
+    }
 
-        if (!alreadyVisible) {
-          /* snap position silently before revealing — disables left/top transition once */
-          lcTooltip.style.transition = "none";
-          anchorTip(seg);
-          /* force reflow then restore transitions and make visible */
-          lcTooltip.getBoundingClientRect();
-          lcTooltip.style.transition = "";
-          lcTooltip.classList.add("visible");
-        } else {
-          /* already showing — glide to new position */
-          anchorTip(seg);
+    function seededRandom(seed) {
+      const x = Math.sin(seed) * 10000;
+      return x - Math.floor(x);
+    }
+
+    function renderMapLayersForState(state) {
+      if (!mapLayerStack) return;
+
+      // Create only one circle per project
+      const projectKey = `project:${state.panelId}`;
+      
+      // Project circle colors
+      const projectColors = {
+        honey: "#7c6fcd",    // Shrubland purple
+        coffee: "#6f4e37"    // Coffee brown
+      };
+      
+      const colorHex = projectColors[state.panelId] || "#096151";
+      const r = parseInt(colorHex.slice(1, 3), 16);
+      const g = parseInt(colorHex.slice(3, 5), 16);
+      const b = parseInt(colorHex.slice(5, 7), 16);
+      
+      // Different positions for each project
+      const positions = {
+        honey: { dx: -180, dy: -120 },
+        coffee: { dx: 200, dy: 150 }
+      };
+      const pos = positions[state.panelId] || { dx: 0, dy: 0 };
+      
+      const size = 240;
+
+      let layer = mapLayerNodes.get(projectKey);
+      if (!layer) {
+        layer = document.createElement("div");
+        layer.className = "map-layer";
+        mapLayerNodes.set(projectKey, layer);
+      }
+
+      layer.style.setProperty("--size", `${size}px`);
+      layer.style.setProperty("--dx", `${pos.dx}px`);
+      layer.style.setProperty("--dy", `${pos.dy}px`);
+      layer.style.setProperty("--fill", `rgba(${r}, ${g}, ${b}, 0.12)`);
+      layer.style.setProperty("--stroke", `rgba(${r}, ${g}, ${b}, 0.32)`);
+      layer.style.zIndex = "1";
+      layer.setAttribute("title", `Project ${state.panelId}`);
+      layer.setAttribute("data-location-key", `project:${state.panelId}`);
+
+      const cards = Array.from(state.cardsList.querySelectorAll(".location-card"));
+      const dotPalette = (state.config?.lcData || []).map(item => item.color);
+
+      layer.querySelectorAll(".map-location-dot").forEach(dot => dot.remove());
+      cards.forEach((card, index) => {
+        const label = getCardLayerKey(card) || `location-${index}`;
+        const dot = document.createElement("span");
+        dot.className = "map-location-dot";
+        dot.setAttribute("data-location-key", label);
+
+        const angle = seededRandom((index + 1) * 1.73 + (state.panelId === "coffee" ? 17 : 11)) * Math.PI * 2;
+        const radiusNorm = Math.sqrt(seededRandom((index + 1) * 2.19 + (state.panelId === "coffee" ? 31 : 19)));
+        const radiusMax = size * 0.34;
+        const radius = radiusNorm * radiusMax;
+        const dx = Math.round(Math.cos(angle) * radius);
+        const dy = Math.round(Math.sin(angle) * radius);
+
+        const dotColor = dotPalette.length ? dotPalette[index % dotPalette.length] : `rgba(${r}, ${g}, ${b}, 0.8)`;
+        dot.style.setProperty("--dot-x", `${dx}px`);
+        dot.style.setProperty("--dot-y", `${dy}px`);
+        dot.style.setProperty("--dot-color", dotColor);
+        dot.setAttribute("title", label);
+
+        layer.appendChild(dot);
+      });
+
+      // Render all project circles from the map
+      const allLayers = Array.from(mapLayerNodes.values());
+      mapLayerStack.replaceChildren(...allLayers);
+    }
+
+    function initCardClickActions(state) {
+      const setMapDotHover = (card, shouldHover) => {
+        if (!card) return;
+        const label = getCardLayerKey(card);
+        if (!label) return;
+        const projectLayer = mapLayerNodes.get(`project:${state.panelId}`);
+        if (!projectLayer) return;
+        const dot = Array.from(projectLayer.querySelectorAll(".map-location-dot")).find(node => node.getAttribute("data-location-key") === label);
+        if (dot) {
+          dot.classList.toggle("is-hovered", shouldHover);
         }
       };
 
-      const hideTip = () => {
-        clearTimeout(hideTimer);
-        hideTimer = setTimeout(() => lcTooltip.classList.remove("visible"), 220);
+      const triggerClickPulse = (card, event) => {
+        const row = card.querySelector(".status-row");
+        if (!row) return;
+
+        const rect = row.getBoundingClientRect();
+        const x = event ? event.clientX - rect.left : rect.width / 2;
+        const clampedX = Math.max(8, Math.min(rect.width - 8, x));
+        card.style.setProperty("--ripple-x", `${Math.round(clampedX)}px`);
+
+        card.classList.remove("click-pulse");
+        // Restart animation on rapid repeated clicks.
+        card.getBoundingClientRect();
+        card.classList.add("click-pulse");
+
+        if (card._clickPulseTimer) {
+          clearTimeout(card._clickPulseTimer);
+        }
+        card._clickPulseTimer = setTimeout(() => {
+          card.classList.remove("click-pulse");
+        }, 660);
       };
 
-      seg.addEventListener("mouseenter", showTip);
-      seg.addEventListener("mouseleave", hideTip);
-      lcBar.appendChild(seg);
-      segments.push(seg);
-    });
-
-    /* trigger fill animation on next frame so transition fires */
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        segments.forEach(s => s.classList.add("filled"));
+      state.cardsList.addEventListener("click", e => {
+        const card = e.target.closest(".location-card");
+        if (!card) return;
+        activePanelState = state;
+        syncLayerSelection(state, getCardLayerKey(card));
+        renderMapLayersForState(state);
+        triggerClickPulse(card, e);
       });
-    });
 
-    function anchorTip(el) {
-      const r    = el.getBoundingClientRect();
-      const tipW = lcTooltip.offsetWidth;
-      const cx   = r.left + r.width / 2;
-      // bottom stays anchored while the segment scales upward from the bottom.
-      // keep the tooltip tucked just above the hovered segment with a tight gap.
-      const anchorY = r.bottom - 4;
-      lcTooltip.style.left = Math.round(cx - tipW / 2) + "px";
-      lcTooltip.style.top  = Math.round(anchorY) + "px";
+      state.cardsList.addEventListener("keydown", e => {
+        const card = e.target.closest(".location-card");
+        if (!card) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          activePanelState = state;
+          syncLayerSelection(state, getCardLayerKey(card));
+          renderMapLayersForState(state);
+          triggerClickPulse(card);
+        }
+      });
+
+      state.cardsList.addEventListener("mouseenter", e => {
+        const card = e.target.closest(".location-card");
+        if (!card) return;
+        setMapDotHover(card, true);
+      }, true);
+
+      state.cardsList.addEventListener("mouseleave", e => {
+        const card = e.target.closest(".location-card");
+        if (!card) return;
+        setMapDotHover(card, false);
+      }, true);
+
+      state.cardsList.addEventListener("focusin", e => {
+        const card = e.target.closest(".location-card");
+        if (!card) return;
+        setMapDotHover(card, true);
+      });
+
+      state.cardsList.addEventListener("focusout", e => {
+        const card = e.target.closest(".location-card");
+        if (!card) return;
+        setMapDotHover(card, false);
+      });
     }
 
-    /* keep legacy moveTip so nothing else breaks */
-    function moveTip(e) {}
+    function initPanel(panelEl, config, panelId) {
+      const lcBar = panelEl.querySelector(".js-lc-bar");
+      const lcTooltip = panelEl.querySelector(".js-lc-tooltip");
+      const lcTipLbl = panelEl.querySelector(".js-lc-tip-label");
+      const lcTipVal = panelEl.querySelector(".js-lc-tip-val");
+      const totalLabel = panelEl.querySelector(".js-lc-total-label");
+      const cardsList = panelEl.querySelector(".js-cards-list");
 
-    /* ── Location cards ── */
-    const cardsData = [
-      { location: "Al Marzoum", area: "4,214 ha", trend: "+2%" },
-      { location: "Jebel Ali", area: "2,986 ha", trend: "+3%" },
-      { location: "Ras Al Khor", area: "1,742 ha", trend: "+1%" },
-      { location: "Umm Al Quwain", area: "3,118 ha", trend: "+4%" },
-      { location: "Khor Fakkan", area: "2,105 ha", trend: "+2%" },
-      { location: "Abu Al Abyad", area: "5,032 ha", trend: "+5%" },
-      { location: "Saadiyat", area: "1,408 ha", trend: "+1%" },
-      { location: "Sir Bani Yas", area: "2,673 ha", trend: "+3%" },
-      { location: "Jubail", area: "3,524 ha", trend: "+2%" },
-      { location: "Kalba", area: "1,958 ha", trend: "+2%" },
-      { location: "Al Mirfa", area: "2,311 ha", trend: "+1%" },
-      { location: "Qurm Reserve", area: "1,624 ha", trend: "+3%" },
-      { location: "Al Zorah", area: "1,287 ha", trend: "+2%" },
-      { location: "Mina Zayed", area: "2,044 ha", trend: "+1%" },
-      { location: "Yas Channel", area: "1,813 ha", trend: "+2%" },
-      { location: "Mangrove Bay", area: "3,449 ha", trend: "+4%" },
-      { location: "Al Hamriya", area: "2,238 ha", trend: "+2%" },
-      { location: "Al Dhafra", area: "4,907 ha", trend: "+3%" },
-      { location: "Khalifa Port", area: "2,570 ha", trend: "+2%" },
-      { location: "Al Sila", area: "1,936 ha", trend: "+1%" }
-    ];
- 
-    const cardsList = document.getElementById("cardsList");
-    const cardTemplate = document.getElementById("cardTemplate");
+      const state = {
+        panelId: panelEl.dataset.panelId || "panel",
+        config: config,
+        cardsList,
+        selectedLayerKey: ""
+      };
 
-    cardsData.forEach((item) => {
-      const fragment = cardTemplate.content.cloneNode(true);
-      fragment.querySelector(".name").textContent = item.location;
-      fragment.querySelector(".area-normal").textContent = item.area;
-      fragment.querySelector(".trend-value").textContent = item.trend;
-      cardsList.appendChild(fragment);
+      const lcTotal = config.lcData.reduce((s, d) => s + d.ha, 0);
+      totalLabel.textContent = `${lcTotal.toLocaleString()} ha`;
+
+      const segments = [];
+      let hideTimer = null;
+
+      config.lcData.forEach((d, i) => {
+        const seg = document.createElement("div");
+        seg.className = "lc-segment";
+        seg.style.background = d.color;
+        seg.style.setProperty("--seg-flex", String(d.ha));
+        seg.style.transitionDelay = (i * 60) + "ms, 0ms, " + (i * 16) + "ms";
+
+        const showTip = () => {
+          clearTimeout(hideTimer);
+          const alreadyVisible = lcTooltip.classList.contains("visible");
+          lcTipLbl.textContent = d.label;
+          lcTipVal.textContent = d.ha.toLocaleString() + " ha (" + ((d.ha / lcTotal) * 100).toFixed(1) + "%)";
+
+          if (!alreadyVisible) {
+            lcTooltip.style.transition = "none";
+            anchorTip(seg, lcTooltip);
+            lcTooltip.getBoundingClientRect();
+            lcTooltip.style.transition = "";
+            lcTooltip.classList.add("visible");
+          } else {
+            anchorTip(seg, lcTooltip);
+          }
+        };
+
+        const hideTip = () => {
+          clearTimeout(hideTimer);
+          hideTimer = setTimeout(() => lcTooltip.classList.remove("visible"), 220);
+        };
+
+        seg.addEventListener("mouseenter", showTip);
+        seg.addEventListener("mouseleave", hideTip);
+        lcBar.appendChild(seg);
+        segments.push(seg);
+      });
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          segments.forEach(s => s.classList.add("filled"));
+        });
+      });
+
+      config.cardsData.forEach((item, cardIndex) => {
+        const fragment = cardTemplate.content.cloneNode(true);
+        const card = fragment.querySelector(".location-card");
+        card.setAttribute("role", "button");
+        fragment.querySelector(".name").textContent = item.location;
+        fragment.querySelector(".area-normal").textContent = item.area;
+        fragment.querySelector(".trend-value").textContent = item.trend;
+        
+        cardsList.appendChild(fragment);
+      });
+
+      initCardClickActions(state);
+
+      // Create circle for this project
+      renderMapLayersForState(state);
+
+      if (!activePanelState) {
+        activePanelState = state;
+      }
+    }
+
+    const panelStack = document.querySelector(".panel-stack");
+
+    document.querySelectorAll(".js-demo-panel").forEach(panelEl => {
+      const panelId = panelEl.dataset.panelId || "honey";
+      initPanel(panelEl, panelsConfig[panelId] || panelsConfig.honey, panelId);
+
+      const projectHeader = panelEl.querySelector(".project-header");
+      if (projectHeader) {
+        // Highlight project circle on header hover
+        projectHeader.addEventListener("mouseenter", () => {
+          const projectKey = `project:${panelId}`;
+          const layer = mapLayerNodes.get(projectKey);
+          if (layer) layer.classList.add("is-hovered");
+        });
+
+        projectHeader.addEventListener("mouseleave", () => {
+          const projectKey = `project:${panelId}`;
+          const layer = mapLayerNodes.get(projectKey);
+          if (layer) layer.classList.remove("is-hovered");
+        });
+      }
     });
+
+    if (panelStack) {
+      let scrollIndicatorTimer = null;
+      const headers = Array.from(document.querySelectorAll(".project-header"));
+
+      const updateScrolledHeaders = () => {
+        const isScrolled = panelStack.scrollTop > 0;
+        headers.forEach(header => header.classList.toggle("has-scrolled", isScrolled));
+      };
+
+      panelStack.addEventListener("scroll", () => {
+        panelStack.classList.add("is-scrolling");
+        updateScrolledHeaders();
+
+        if (scrollIndicatorTimer) {
+          clearTimeout(scrollIndicatorTimer);
+        }
+
+        scrollIndicatorTimer = setTimeout(() => {
+          panelStack.classList.remove("is-scrolling");
+        }, 220);
+      });
+
+      updateScrolledHeaders();
+    }
+
   </script>
 </body>
 </html>
