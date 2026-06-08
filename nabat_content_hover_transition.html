@@ -30,14 +30,14 @@
       justify-content: center;
       align-items: flex-start;
       font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at 15% 15%, #ffffff 0%, var(--page-background) 45%, #ece9ed 100%);
+      background-color: rgb(250 244 240);
       color: var(--text-normal);
       padding: 24px;
     }
 
     .demo {
       width: min(94vw, 380px);
-      background: #ffffff;
+      background: rgb(252 250 248);
       border: 1px solid #efedf1;
       border-radius: 14px;
       padding: 20px;
@@ -327,6 +327,248 @@
       box-shadow: 0 0 0 3px rgba(9, 97, 81, 0.16);
     }
 
+    /* ── Project header ─────────────────────────────────── */
+    .project-header {
+      border-radius: 12px;
+      padding: 14px 16px 0;
+      margin-bottom: 16px;
+    }
+
+    .project-header-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-family: Manrope, Inter, -apple-system, "system-ui", "Segoe UI", system-ui, sans-serif;
+      font-size: 12px;
+      line-height: 18px;
+      color: rgb(112, 106, 115);
+      font-feature-settings: normal;
+      font-variation-settings: normal;
+      cursor: pointer;
+      border: 0px solid rgb(212, 212, 212);
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    }
+
+    .project-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #e84444;
+      flex-shrink: 0;
+    }
+
+    .project-tag {
+      font-size: 12px;
+      line-height: 18px;
+      color: var(--text-coal);
+    }
+
+    .project-tag-divider {
+      font-size: 12px;
+      color: var(--shade-muted);
+    }
+
+    .project-title {
+      margin: 0 0 10px;
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 24px;
+      color: var(--text-normal);
+      letter-spacing: -0.01em;
+    }
+
+    .project-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .project-meta-label {
+      font-size: 12px;
+      color: var(--text-coal);
+    }
+
+    .project-meta-value {
+      font-size: 12px;
+      color: var(--text-coal);
+    }
+
+    /* ── Land-cover chart ─────────────────────────────── */
+    .lc-chart-wrap {
+      margin-bottom: 10px;
+    }
+
+    .lc-bar {
+      display: flex;
+      gap: 2px;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 8px;
+      cursor: default;
+    }
+
+    .lc-segment {
+      height: 100%;
+      border-radius: 3px;
+      position: relative;
+      flex: 0 0 0% !important; /* starts at 0, JS animates to real value */
+      transition: flex 700ms cubic-bezier(0.22,1,0.36,1),
+                  filter 180ms ease,
+                  transform 180ms ease;
+      transform-origin: center bottom;
+      cursor: pointer;
+    }
+
+    .lc-segment.filled {
+      flex: var(--seg-flex) !important;
+    }
+
+    .lc-segment:hover {
+      filter: brightness(1.18);
+      transform: scale(1.06, 1.65) translateY(-3px);
+    }
+
+    .lc-tooltip {
+      position: fixed;
+      background: rgba(24, 20, 30, 0.88);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      font-size: 11.5px;
+      line-height: 16px;
+      padding: 6px 11px 7px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.08);
+      pointer-events: none;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateY(calc(-100% + 8px)) scale(0.93);
+      transform-origin: bottom center;
+      transition:
+        opacity 200ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+        filter 200ms ease,
+        left 180ms cubic-bezier(0.22, 1, 0.36, 1),
+        top 180ms cubic-bezier(0.22, 1, 0.36, 1);
+      filter: blur(2px);
+      z-index: 999;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.14);
+    }
+
+    .lc-tooltip.visible {
+      opacity: 1;
+      transform: translateY(-100%) scale(1);
+      filter: blur(0);
+    }
+
+    /* small arrow pointing down */
+    .lc-tooltip::after {
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-bottom: none;
+      border-top-color: rgba(24, 20, 30, 0.88);
+    }
+
+    .lc-tooltip-label {
+      font-weight: 600;
+      font-size: 11.5px;
+      letter-spacing: 0.01em;
+      margin-bottom: 1px;
+    }
+
+    .lc-tooltip-val {
+      color: rgba(255,255,255,0.6);
+      font-size: 10.5px;
+    }
+
+    .project-divider {
+      border: none;
+      border-top: 1px solid var(--border-primary);
+      margin: 0 -16px;
+    }
+
+    .project-header {
+      position: relative;
+      cursor: pointer;
+      transition: transform 380ms cubic-bezier(0.22, 1, 0.36, 1),
+                  box-shadow 380ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .project-header:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(21, 19, 28, 0.1);
+    }
+
+    /* ── header arrow ── */
+    .header-arrow {
+      position: absolute;
+      right: 16px;
+      top: 16px;
+      width: 16px;
+      height: 16px;
+      opacity: 0;
+      transform: translateX(-6px);
+      transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+      pointer-events: none;
+    }
+
+    .project-header:hover .header-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .header-arrow-code {
+      position: absolute;
+      inset: 0;
+      left: -2px;
+      color: var(--text-coal);
+      transform: rotate(0deg);
+      transform-origin: 8px 8px;
+    }
+
+    .header-arrow-code::before {
+      content: "";
+      position: absolute;
+      left: 1px;
+      right: 4px;
+      top: 7px;
+      height: 1.6px;
+      background: currentColor;
+      border-radius: 2px;
+    }
+
+    .header-arrow-code::after {
+      content: "";
+      position: absolute;
+      right: 1px;
+      top: 4.6px;
+      width: 5px;
+      height: 5px;
+      border-top: 1.6px solid currentColor;
+      border-right: 1.6px solid currentColor;
+      transform: rotate(45deg);
+    }
+
+    .cards-list {
+      transition: opacity 320ms cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .project-header:hover ~ .cards-list {
+      opacity: 0.25;
+      transform: translateY(-4px);
+      pointer-events: none;
+    }
+
     @media (max-width: 420px) {
       .demo {
         width: 100%;
@@ -341,6 +583,28 @@
 </head>
 <body>
   <main class="demo" aria-label="Figma state transition demo">
+    <header class="project-header">
+      <span class="header-arrow" aria-hidden="true"><span class="header-arrow-code"></span></span>
+      <div class="project-header-top">
+        <span class="project-dot" aria-hidden="true"></span>
+        <span class="project-tag">AE</span>
+        <span class="project-tag-divider">|</span>
+        <span class="project-tag">8351 ha</span>
+      </div>
+      <h1 class="project-title">Project Honey 2024</h1>
+      <div class="project-meta-row">
+        <span class="project-meta-label">Land cover</span>
+        <span class="project-meta-value" id="lcTotalLabel">8331 ha</span>
+      </div>
+      <div class="lc-chart-wrap">
+        <div class="lc-bar" id="lcBar"></div>
+      </div>
+      <div class="lc-tooltip" id="lcTooltip">
+        <div class="lc-tooltip-label" id="lcTipLabel"></div>
+        <div class="lc-tooltip-val" id="lcTipVal"></div>
+      </div>
+      <hr class="project-divider" />
+    </header>
     <div class="cards-list" id="cardsList"></div>
   </main>
 
@@ -374,6 +638,88 @@
   </template>
 
   <script>
+    /* ── Land-cover chart data ── */
+    const lcData = [
+      { label: "Shrubland",  ha: 3124, color: "#7c6fcd" },
+      { label: "Sabkha",     ha: 1847, color: "#c4651a" },
+      { label: "Mangroves",  ha: 2203, color: "#3fa46a" },
+      { label: "Bare soil",  ha:  680, color: "#8a8690" },
+      { label: "Waterbody",  ha:  477, color: "#4a9ec4" }
+    ];
+
+    const lcTotal   = lcData.reduce((s, d) => s + d.ha, 0);
+    const lcBar     = document.getElementById("lcBar");
+    const lcTooltip = document.getElementById("lcTooltip");
+    const lcTipLbl  = document.getElementById("lcTipLabel");
+    const lcTipVal  = document.getElementById("lcTipVal");
+
+    const segments = [];
+    let hideTimer = null;
+
+    lcData.forEach((d, i) => {
+      const seg = document.createElement("div");
+      seg.className = "lc-segment";
+      seg.style.background = d.color;
+      seg.style.setProperty("--seg-flex", String(d.ha));
+      /* stagger each segment's fill by 60 ms */
+      seg.style.transitionDelay = (i * 60) + "ms";
+
+      const showTip = () => {
+        clearTimeout(hideTimer);
+        const alreadyVisible = lcTooltip.classList.contains("visible");
+
+        /* update text */
+        lcTipLbl.textContent = d.label;
+        lcTipVal.textContent = d.ha.toLocaleString() + " ha ("
+          + ((d.ha / lcTotal) * 100).toFixed(1) + "%)";
+
+        if (!alreadyVisible) {
+          /* snap position silently before revealing — disables left/top transition once */
+          lcTooltip.style.transition = "none";
+          anchorTip(seg);
+          /* force reflow then restore transitions and make visible */
+          lcTooltip.getBoundingClientRect();
+          lcTooltip.style.transition = "";
+          lcTooltip.classList.add("visible");
+        } else {
+          /* already showing — glide to new position */
+          anchorTip(seg);
+        }
+      };
+
+      const hideTip = () => {
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(() => lcTooltip.classList.remove("visible"), 220);
+      };
+
+      seg.addEventListener("mouseenter", showTip);
+      seg.addEventListener("mouseleave", hideTip);
+      lcBar.appendChild(seg);
+      segments.push(seg);
+    });
+
+    /* trigger fill animation on next frame so transition fires */
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        segments.forEach(s => s.classList.add("filled"));
+      });
+    });
+
+    function anchorTip(el) {
+      const r    = el.getBoundingClientRect();
+      const tipW = lcTooltip.offsetWidth;
+      const cx   = r.left + r.width / 2;
+      // r.bottom is stable because transform-origin is center bottom.
+      // translateY(-3px) shifts bottom up 3px; place tooltip 5px above that.
+      const anchorY = r.bottom - 3 - 5;
+      lcTooltip.style.left = Math.round(cx - tipW / 2) + "px";
+      lcTooltip.style.top  = Math.round(anchorY) + "px";
+    }
+
+    /* keep legacy moveTip so nothing else breaks */
+    function moveTip(e) {}
+
+    /* ── Location cards ── */
     const cardsData = [
       { location: "Al Marzoum", area: "4,214 ha", trend: "+2%" },
       { location: "Jebel Ali", area: "2,986 ha", trend: "+3%" },
